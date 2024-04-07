@@ -68,6 +68,9 @@ struct StableDiffusionSample: ParsableCommand {
     @Option(help: "Controls the influence of the text prompt on sampling process (0=random images)")
     var guidanceScale: Float = 7.5
 
+    @Option(help: "{eps, x, v}")
+    var predictionType: PredictionTypeOption = .eps
+
     @Option(help: "Compute units to load model with {all,cpuOnly,cpuAndGPU,cpuAndNeuralEngine}")
     var computeUnits: ComputeUnits = .all
 
@@ -193,6 +196,7 @@ struct StableDiffusionSample: ParsableCommand {
         pipelineConfig.seed = seed
         pipelineConfig.controlNetInputs = controlNetInputs
         pipelineConfig.guidanceScale = guidanceScale
+        pipelineConfig.predictionType = predictionType.predictionType
         pipelineConfig.schedulerType = scheduler.stableDiffusionScheduler
         pipelineConfig.rngType = rng.stableDiffusionRNG
         pipelineConfig.useDenoisedIntermediates = true
@@ -321,6 +325,19 @@ enum ComputeUnits: String, ExpressibleByArgument, CaseIterable {
         }
     }
 }
+
+@available(iOS 16.2, macOS 13.1, *)
+public enum PredictionTypeOption: String, ExpressibleByArgument{
+    case x, v, eps
+    var predictionType: PredictionType {
+        switch self {
+            case .x: return .xPrediction
+            case .v: return .vPrediction
+            case .eps: return .epsilon
+        }
+    }
+}
+
 
 @available(iOS 16.2, macOS 13.1, *)
 enum SchedulerOption: String, ExpressibleByArgument {

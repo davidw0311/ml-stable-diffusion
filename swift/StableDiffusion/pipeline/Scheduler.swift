@@ -5,6 +5,7 @@ import Accelerate
 import CoreML
 import RandomGenerator
 
+
 @available(iOS 16.2, macOS 13.1, *)
 public protocol Scheduler {
     /// Number of diffusion steps performed during training
@@ -391,10 +392,11 @@ public final class LCMScheduler: Scheduler {
     // var stepIndex: Int
 
     /// LCM from pytorch
-    var finalAlphaCumProd: Float32
+    // var finalAlphaCumProd: Float32
     let sigma_data: Float32
     let timeStepScaling: Float32
     let generator: RandomGenerator
+    let predictionType: PredictionType
 
     /// Create a scheduler that uses a pseudo linear multi-step (PLMS)  method
     ///
@@ -410,7 +412,8 @@ public final class LCMScheduler: Scheduler {
         trainStepCount: Int = 1000,
         betaSchedule: BetaSchedule = .scaledLinear,
         betaStart: Float = 0.00085,
-        betaEnd: Float = 0.012
+        betaEnd: Float = 0.012,
+        predictionType: PredictionType = .epsilon
     ) {
         self.trainStepCount = trainStepCount
         self.inferenceStepCount = stepCount
@@ -428,51 +431,33 @@ public final class LCMScheduler: Scheduler {
         }
         self.alphasCumProd = alphasCumProd
 
-        self.finalAlphaCumProd = alphasCumProd[0]
+        // self.finalAlphaCumProd = alphasCumProd[0]
 
         // let stepRatio = Float(trainStepCount / 50 )
         // var lcmOriginTimeSteps = (1...max(1, 50)).map {
         //     (Float($0) * stepRatio).rounded() - 1
         // }
-        var lcmOriginTimeSteps = (1...max(1, 1000)).map {
-            (Float($0)).rounded() - 1
-        }
+        var lcmOriginTimeSteps = (0...trainStepCount - 1).map { Int($0) }
         lcmOriginTimeSteps.reverse()
-        print("lcmOriginTimeSteps:", lcmOriginTimeSteps)
 
         let timeStepsIndexes = linspace(0, Float(lcmOriginTimeSteps.count), stepCount, endpoint: false)
             .map { Int($0) }
-        print("timeStepsIndexes:", timeStepsIndexes)
 
         self.timeSteps = timeStepsIndexes.map{ Int(lcmOriginTimeSteps[$0]) }
-
-        print("timeSteps:", self.timeSteps)
 
         self.alpha_t = vForce.sqrt(self.alphasCumProd)
         self.sigma_t = vForce.sqrt(vDSP.subtract([Float](repeating: 1, count: self.alphasCumProd.count), self.alphasCumProd))
         self.lambda_t = zip(self.alpha_t, self.sigma_t).map { α, σ in log(α) - log(σ) }
 
-        // let stepsOffset = 1 // For stable diffusion
-        // let stepRatio = Float(trainStepCount / stepCount )
-        // let forwardSteps = (0..<stepCount).map {
-        //     Int((Float($0) * stepRatio).rounded()) + stepsOffset
-        // }
-
-        // var timeSteps: [Int] = []
-        // timeSteps.append(contentsOf: forwardSteps.dropLast(1))
-        // timeSteps.append(timeSteps.last!)
-        // timeSteps.append(forwardSteps.last!)
-        // timeSteps.reverse()
-        // self.timeSteps = timeSteps
-
         self.counter = 0
         self.currentSample = nil
 
         ///  ------ for LCM ------- 
-        self.finalAlphaCumProd = self.alphasCumProd[0]
+        // self.finalAlphaCumProd = self.alphasCumProd[0]
         self.sigma_data = 0.5
         self.timeStepScaling = 10.0
         self.generator = TorchRandomGenerator(seed: 999)
+        self.predictionType = predictionType
     }
 
     /// Compute a de-noised image sample and step scheduler state
@@ -490,55 +475,46 @@ public final class LCMScheduler: Scheduler {
         sample s: MLShapedArray<Float32>
     ) -> MLShapedArray<Float32> {
 
-        
         let modelOutput = output
         let sample = s
-     
-
-        // let prevStepIndex = stepIndex + 1
 
         let timeStep = t
         let stepIndex = timeSteps.firstIndex(of: timeStep) ?? timeSteps.count - 1
         let prevTimeStep = Int(stepIndex < timeSteps.count - 1 ? timeSteps[stepIndex + 1] : 0)
-        print("timestep, stepindex, prevTimestep: ", timeStep, stepIndex, prevTimeStep)
-
-        // if prevStepIndex < timeSteps.count {
-        //     prevTimeStep = timeSteps[prevStepIndex]
-        // }
 
         let alphaProdT = alphasCumProd[timeStep]
-        let alphaProdTPrev = prevTimeStep >= 0 ? alphasCumProd[prevTimeStep] : finalAlphaCumProd
+        let alphaProdTPrev = alphasCumProd[prevTimeStep]
 
         let betaProdT = 1 - alphaProdT
         let betaProdTPrev = 1 - alphaProdTPrev
 
-        print("alphas:", alphaProdT, alphaProdTPrev)
-        print("betas:", betaProdT, betaProdTPrev)
-
         // step 3: Get scalings for boundary conditions
         let (cSkip, cOut) = getScalingsForBoundaryConditionDiscrete(timeStep)
-        print("got scalings: skip, out: ", cSkip, cOut)
 
         // step 4: Compute the predicted original sample x_0 based on the model parameterization
-        // x-prediction 
-        // let predictedOriginalSample = modelOutput
-        // v-prediction 
-        // let predictedOriginalSample = weightedSum(
-        //     [Double(sqrt(alphaProdT)), Double(sqrt(betaProdT))],
-        //     [sample, modelOutput]
-        // )
-        let scalarCount = modelOutput.scalarCount
-        let predictedOriginalSample = MLShapedArray(unsafeUninitializedShape: output.shape) { scalars, _ in
-                sample.withUnsafeShapedBufferPointer { sample, _, _ in
-                    output.withUnsafeShapedBufferPointer { output, _, _ in
-                        for i in 0..<scalarCount {
-                            scalars.initializeElement(at: i, to: (sample[i] - sqrt(betaProdT) * output[i]) / sqrt(alphaProdT))
+        let predictedOriginalSample: MLShapedArray<Float32>
+        // note: only epsilon prediction can generate some results?
+        switch predictionType {
+        case .xPrediction: 
+            predictedOriginalSample = modelOutput
+        case .vPrediction:
+            predictedOriginalSample = weightedSum(
+                [Double(sqrt(alphaProdT)), Double(sqrt(betaProdT))],
+                [sample, modelOutput]
+            )
+        case .epsilon:
+            let scalarCount = modelOutput.scalarCount
+            predictedOriginalSample = MLShapedArray(unsafeUninitializedShape: output.shape) { scalars, _ in
+                    sample.withUnsafeShapedBufferPointer { sample, _, _ in
+                        output.withUnsafeShapedBufferPointer { output, _, _ in
+                            for i in 0..<scalarCount {
+                                scalars.initializeElement(at: i, to: (sample[i] - sqrt(betaProdT) * output[i]) / sqrt(alphaProdT))
+                            }
                         }
                     }
                 }
-            }
+        }
 
-        // //todo: clip sample
         let denoised = weightedSum(
             [Double(cOut), Double(cSkip)], 
             [predictedOriginalSample, sample]
@@ -548,9 +524,7 @@ public final class LCMScheduler: Scheduler {
         modelOutputs.append(denoised)
 
         let prevSample: MLShapedArray<Float32>
-        // if stepIndex != inferenceStepCount - 1 {
         if timeStep != timeSteps.last {
-            print("generating noise, timestep: ", timeStep)
             let noise = MLShapedArray<Float32>(converting: generator.nextArray(shape: output.shape))
             prevSample = weightedSum(
                 [Double(sqrt(alphaProdTPrev)), Double(sqrt(betaProdTPrev))],
@@ -560,7 +534,6 @@ public final class LCMScheduler: Scheduler {
             prevSample = denoised
         }
 
-        // counter += 1
         return prevSample
     }
 
