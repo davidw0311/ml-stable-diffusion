@@ -689,7 +689,9 @@ def convert_unet(pipe, args, model_name = None):
             args.latent_h or pipe.unet.config.sample_size,  # H
             args.latent_w or pipe.unet.config.sample_size,  # W
         )
-
+        
+        print("sample shape: ", sample_shape)
+        
         if not hasattr(pipe, "text_encoder"):
             raise RuntimeError(
                 "convert_text_encoder() deletes pipe.text_encoder to save RAM. "
@@ -774,7 +776,7 @@ def convert_unet(pipe, args, model_name = None):
         reference_unet = unet_cls(**pipe.unet.config).eval()
 
         load_state_dict_summary = reference_unet.load_state_dict(
-            pipe.unet.state_dict())
+            pipe.unet.state_dict(), strict=False)
 
         if args.unet_support_controlnet:
             from .unet import calculate_conv2d_output_shape
@@ -1294,6 +1296,12 @@ def get_pipeline(args):
                                             variant="fp16",
                                             use_safetensors=True,
                                             use_auth_token=True)
+        # pipeline = DiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16).to("cuda")
+        # print("fusing in the lcm lora")
+        # pipe.load_lora_weights("latent-consistency/lcm-lora-sdv1-5")
+        # pipe.fuse_lora()
+        # pipe.unload_lora_weights()
+        # print("lcm lora fused")
 
     logger.info(f"Done. Pipeline in effect: {pipe.__class__.__name__}")
 
