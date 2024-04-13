@@ -123,12 +123,14 @@ public extension StableDiffusionPipeline {
         // Image Decoder
         let decoder = Decoder(modelAt: urls.decoderURL, configuration: config)
 
-        // Optional safety checker
-        var safetyChecker: SafetyChecker? = nil
-        if !disableSafety &&
-            FileManager.default.fileExists(atPath: urls.safetyCheckerURL.path) {
-            safetyChecker = SafetyChecker(modelAt: urls.safetyCheckerURL, configuration: config)
-        }
+        // Compulsory safety checker
+        let safetyChecker: SafetyChecker = SafetyChecker(modelAt: urls.safetyCheckerURL, configuration: config)
+        print("safetyChecker loaded!")
+        print(safetyChecker)
+        // if !disableSafety &&
+        //     FileManager.default.fileExists(atPath: urls.safetyCheckerURL.path) {
+        //     safetyChecker = SafetyChecker(modelAt: urls.safetyCheckerURL, configuration: config)
+        // }
         
         // Optional Image Encoder
         let encoder: Encoder?

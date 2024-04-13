@@ -120,7 +120,7 @@ public struct StableDiffusionPipeline: StableDiffusionPipelineProtocol {
         decoder: Decoder,
         encoder: Encoder?,
         controlNet: ControlNet? = nil,
-        safetyChecker: SafetyChecker? = nil,
+        safetyChecker: SafetyChecker,
         reduceMemory: Bool = false
     ) {
         self.textEncoder = textEncoder
@@ -151,7 +151,7 @@ public struct StableDiffusionPipeline: StableDiffusionPipelineProtocol {
         decoder: Decoder,
         encoder: Encoder?,
         controlNet: ControlNet? = nil,
-        safetyChecker: SafetyChecker? = nil,
+        safetyChecker: SafetyChecker,
         reduceMemory: Bool = false,
         useMultilingualTextEncoder: Bool = false,
         script: Script? = nil

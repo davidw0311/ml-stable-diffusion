@@ -1284,15 +1284,15 @@ def get_pipeline(args):
         vae = AutoencoderKL.from_pretrained(args.custom_vae_version, torch_dtype=torch.float16)
         pipe = DiffusionPipeline.from_pretrained(model_version,
                                             torch_dtype=torch.float16,
-                                            variant="fp16",
-                                            use_safetensors=True,
+                                            # variant="fp16",
+                                            # use_safetensors=True,
                                             vae=vae,
                                             use_auth_token=True)
     else:
         pipe = DiffusionPipeline.from_pretrained(model_version,
                                             torch_dtype=torch.float16,
-                                            variant="fp16",
-                                            use_safetensors=True,
+                                            # variant="fp16",
+                                            # use_safetensors=True,
                                             use_auth_token=True)
 
     logger.info(f"Done. Pipeline in effect: {pipe.__class__.__name__}")
