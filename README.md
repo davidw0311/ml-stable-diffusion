@@ -5,6 +5,24 @@
 
 ## Converting Models to CoreML
 
+The text encoder and VAE encoder/decoder can be converted into coreml following apple's official repository [https://github.com/apple/ml-stable-diffusion](https://github.com/apple/ml-stable-diffusion)
+
+Our converted checkpoints can be found at [https://huggingface.co/davidw0311/sd-coreml](https://huggingface.co/davidw0311/sd-coreml)
+
+To convert the unet, we provide a custom script under [torch2coreml_custom.py](python_coreml_stable_diffusion/torch2coreml_custom.py) specifically for converting the distilled model. 
+
+To perform conversion run
+
+```
+export PYTORCH_UNET_PATH=<path_to_pytorch_unet>
+export COREML_UNET_SAVEPATH=<path_to_save_coreml_unet>
+```
+replacing <path_to_pytorch_unet> with the path to the pytorch unet checkpoint, and <path_to_save_coreml_unet> with where the converted model will be saved
+
+Then execute
+```
+python -m python_coreml_stable_diffusion.torch2coreml_custom --convert-unet --model-version "lykon/absolutereality" -o $COREML_UNET_SAVEPATH --unet-path $PYTORCH_UNET_PATH --compute-unit CPU_AND_NE --quantize-nbits 6 --attention-implementation SPLIT_EINSUM
+```
 
 ## Implementation of LCM Scheduler
 

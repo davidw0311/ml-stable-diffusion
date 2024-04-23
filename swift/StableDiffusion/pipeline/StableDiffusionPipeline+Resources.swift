@@ -25,9 +25,13 @@ public extension StableDiffusionPipeline {
         public let controlledUnetChunk2URL: URL
         public let multilingualTextEncoderProjectionURL: URL
 
-        public init(resourcesAt baseURL: URL) {
+        public init(resourcesAt baseURL: URL, unetFolder: URL?) {
             textEncoderURL = baseURL.appending(path: "TextEncoder.mlmodelc")
-            unetURL = baseURL.appending(path: "Unet.mlmodelc")
+            if let unetFolder=unetFolder{
+                unetURL = unetFolder.appending(path: "Unet.mlmodelc")
+            } else {
+                unetURL = baseURL.appending(path: "Unet.mlmodelc")
+            }
             unetChunk1URL = baseURL.appending(path: "UnetChunk1.mlmodelc")
             unetChunk2URL = baseURL.appending(path: "UnetChunk2.mlmodelc")
             decoderURL = baseURL.appending(path: "VAEDecoder.mlmodelc")
@@ -48,6 +52,7 @@ public extension StableDiffusionPipeline {
     ///
     /// - Parameters:
     ///   - baseURL: URL pointing to directory holding all model and tokenization resources
+    ///   - unetFolder: optional URL pointing to a folder with a different unet
     ///   - controlNetModelNames: Specify ControlNet models to use in generation
     ///   - configuration: The configuration to load model resources with
     ///   - disableSafety: Load time disable of safety to save memory
@@ -59,6 +64,7 @@ public extension StableDiffusionPipeline {
     init(
         resourcesAt baseURL: URL,
         controlNet controlNetModelNames: [String],
+        unetFolder: URL? = nil,
         configuration config: MLModelConfiguration = .init(),
         disableSafety: Bool = false,
         reduceMemory: Bool = false,
@@ -67,7 +73,7 @@ public extension StableDiffusionPipeline {
     ) throws {
 
         /// Expect URL of each resource
-        let urls = ResourceURLs(resourcesAt: baseURL)
+        let urls = ResourceURLs(resourcesAt: baseURL, unetFolder: unetFolder)
         let textEncoder: TextEncoderModel
 
 #if canImport(NaturalLanguage.NLScript)
