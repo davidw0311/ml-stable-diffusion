@@ -4,6 +4,9 @@
 
 ## We present our app, DreamDrawer, capable of on-device text to image generation in less than 3s
 
+<p align="center">
+  <img src="assets/showcase.png"/>
+</p>
 
 To our complete training process in Pytorch can be found at [https://github.com/davidw0311/diffusers](https://github.com/davidw0311/diffusers)
 
