@@ -24,3 +24,11 @@ replacing <path_to_models> with the absolute path to the models folder
 ```
 swift run StableDiffusionSample "a cat" --resource-path $COREML_MODELS_PATH --seed 123456 --disable-safety --compute-units cpuAndNeuralEngine --step-count 4 --output-path images --scheduler lcm --guidance-scale 1.0
 ```
+
+On a macbook, the first time to loading the model may take a few minutes, and subsequent image generation should take a few seconds.
+
+<p align="center">
+  <img src="images/a_cat.123456.final.png" width="300" height="300"/>
+</p>
+
+The generated images will appear in the [images](images) folder, tagged with their name and random seed
