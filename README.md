@@ -8,7 +8,7 @@
   <img src="assets/showcase.png"/>
 </p>
 
-To our complete training process in Pytorch can be found at [https://github.com/davidw0311/diffusers](https://github.com/davidw0311/diffusers)
+Our complete training process in Pytorch can be found at [https://github.com/davidw0311/diffusers](https://github.com/davidw0311/diffusers)
 
 Below details the conversion process for pytorch models into coreml and deployment into our iOS App:
 
