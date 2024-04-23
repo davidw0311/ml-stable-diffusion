@@ -356,11 +356,13 @@ public struct StableDiffusionPipeline: StableDiffusionPipelineProtocol {
 
         // If safety is disabled return what was decoded
         if config.disableSafety {
+            print("safety checker is disabled")
             return images
         }
 
         // If there is no safety checker return what was decoded
         guard let safetyChecker = safetyChecker else {
+            print("safety checker was not found")
             return images
         }
 

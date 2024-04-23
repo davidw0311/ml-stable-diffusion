@@ -142,7 +142,7 @@ def _convert_to_coreml(submodule_name, torchscript_module, sample_inputs,
 def quantize_weights(args):
     """ Quantize weights to args.quantize_nbits using a palette (look-up table)
     """
-    for model_name in ["text_encoder", "text_encoder_2", "unet", "refiner", "control-unet"]:
+    for model_name in ["text_encoder", "text_encoder_2", "unet", "refiner", "control-unet", "safety_checker"]:
         logger.info(f"Quantizing {model_name} to {args.quantize_nbits}-bit precision")
         out_path = _get_out_path(args, model_name)
         _quantize_weights(
