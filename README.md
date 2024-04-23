@@ -2,7 +2,7 @@
 
 > This repository was forked from [https://github.com/apple/ml-stable-diffusion](https://github.com/apple/ml-stable-diffusion)
 
-# We present our app DreamDrawer, capable of on device text to image generation in less than 3s
+## We present our app, DreamDrawer, capable of on-device text to image generation in less than 3s
 
 
 To our complete training process in Pytorch can be found at [https://github.com/davidw0311/diffusers](https://github.com/davidw0311/diffusers)
