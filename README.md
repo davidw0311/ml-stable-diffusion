@@ -24,13 +24,22 @@ Then execute
 python -m python_coreml_stable_diffusion.torch2coreml_custom --convert-unet --model-version "lykon/absolutereality" -o $COREML_UNET_SAVEPATH --unet-path $PYTORCH_UNET_PATH --compute-unit CPU_AND_NE --quantize-nbits 6 --attention-implementation SPLIT_EINSUM
 ```
 
+After the model has been converted into a coreml .mlpackge, run the following to compile to a .mlmodelc file
+
+```
+xcrun coremlcompiler compile <path_to_mlpackage> <output_dir>
+```
+replacing <path_to_mlpackage> with the path of the .mlpackage file and <output_dir> 
+
 ## Implementation of LCM Scheduler
 
 The Latent Consistency Sheduler is added to the implementation in [Scheduler.swift](swift/StableDiffusion/pipeline/Scheduler.swift)
 
+Buiding off of apple's framework, we can now directly use the lcmScheduler option to choose LCM as the scheduler.
 
+## Instructions for Inference
 
-### First export the path to the compiled coreml models
+#### First export the path to the compiled coreml models
 
 ```
 export COREML_MODELS_PATH=<path_to_models>
@@ -38,7 +47,7 @@ export COREML_MODELS_PATH=<path_to_models>
 replacing <path_to_models> with the absolute path to the models folder
 
 
-### Then generate an image using
+#### Then generate an image using
 ```
 swift run StableDiffusionSample "a cat" --resource-path $COREML_MODELS_PATH --seed 123456 --disable-safety --compute-units cpuAndNeuralEngine --step-count 4 --output-path images --scheduler lcm --guidance-scale 1.0
 ```
