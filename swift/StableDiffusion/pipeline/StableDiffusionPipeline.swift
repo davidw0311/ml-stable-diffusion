@@ -34,6 +34,12 @@ public enum PipelineError: String, Swift.Error {
     case unsupportedOSVersion
 }
 
+public enum PredictionType: String{
+    case xPrediction
+    case vPrediction
+    case epsilon
+}
+
 @available(iOS 16.2, macOS 13.1, *)
 public protocol StableDiffusionPipelineProtocol: ResourceManaging {
     var canSafetyCheck: Bool { get }
@@ -230,7 +236,7 @@ public struct StableDiffusionPipeline: StableDiffusionPipelineProtocol {
         let scheduler: [Scheduler] = (0..<config.imageCount).map { _ in
             switch config.schedulerType {
             case .pndmScheduler: return PNDMScheduler(stepCount: config.stepCount)
-            case .lcmScheduler: return LCMScheduler(stepCount: config.stepCount)
+            case .lcmScheduler: return LCMScheduler(stepCount: config.stepCount, predictionType: config.predictionType)
             case .dpmSolverMultistepScheduler: return DPMSolverMultistepScheduler(stepCount: config.stepCount, timeStepSpacing: config.schedulerTimestepSpacing)
             }
         }

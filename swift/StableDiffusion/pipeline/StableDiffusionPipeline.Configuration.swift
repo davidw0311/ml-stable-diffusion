@@ -66,6 +66,8 @@ public struct PipelineConfiguration: Hashable {
     /// Can be used to simulate an aesthetic score of the generated image by influencing the negative text condition.
     public var negativeAestheticScore: Float32 = 2.5
 
+    public var predictionType: PredictionType = .epsilon
+
     /// Given the configuration, what mode will be used for generation
     public var mode: PipelineMode {
         guard startingImage != nil else {
