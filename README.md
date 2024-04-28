@@ -92,4 +92,9 @@ Our LCM fine-tuning for less inference steps can be found at [this repo](https:/
 
 # Model Evaluation
 
-Our training for a new model using Human Preference Score V2 can be found at [this repo](https://github.com/ngshikang/MobileDiffusionDistillation), or you can refer to the original [HPS V2 repo](https://github.com/tgxs002/HPSv2).
+Our evaluation script for a new model using Human Preference Score V2 can be found at [this repo](https://github.com/ngshikang/MobileDiffusionDistillation), or you can refer to the original [HPS V2 repo](https://github.com/tgxs002/HPSv2).
+
+# Acknowledgments
+- [National Supercomputing Centre (NSCC) Singapore](https://www.nscc.sg/) for their GPU resources.
+- [CompVis](https://github.com/CompVis/latent-diffusion), [Runway](https://runwayml.com/), [CivitAI, Lykon](https://civitai.com/user/Lykon) and [Stability AI](https://stability.ai/) for the Stable Diffusion models.
+- [LAION](https://laion.ai/), [Diffusers](https://github.com/huggingface/diffusers), [PEFT](https://github.com/huggingface/peft), [Core ML Stable Diffusion](https://github.com/apple/ml-stable-diffusion), and [Nota AI](https://github.com/Nota-NetsPresso/BK-SDM) for their contributions.
