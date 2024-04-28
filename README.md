@@ -88,11 +88,11 @@ The generated images will appear in the [images](images) folder, tagged with the
 
 Our training for a new smaller UNet model can be found at [this repo](https://github.com/ngshikang/MobileDiffusionDistillation).
 
-Our LCM fine-tuning for less inference steps can be found at [this repo](https://github.com/davidw0311/diffusers).
+Our [LCM fine-tuning script](https://github.com/davidw0311/diffusers/blob/lcm-distillation/examples/consistency_distillation/train_lcm_distill_sd_wds.py) for less inference steps can be found at [this repo](https://github.com/davidw0311/diffusers).
 
 # Model Evaluation
 
-Our evaluation script for a new model using Human Preference Score V2 can be found at [this repo](https://github.com/ngshikang/MobileDiffusionDistillation), or you can refer to the original [HPS V2 repo](https://github.com/tgxs002/HPSv2).
+Our [evaluation script](https://github.com/ngshikang/MobileDiffusionDistillation/blob/main/src/generate_distilled_lcm_hpsprompt.py) for a new model using Human Preference Score V2 can be found at [this repo](https://github.com/ngshikang/MobileDiffusionDistillation), or you can refer to the original [HPS V2 repo](https://github.com/tgxs002/HPSv2).
 
 # Acknowledgments
 - [National Supercomputing Centre (NSCC) Singapore](https://www.nscc.sg/) for their GPU resources.
