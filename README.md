@@ -30,7 +30,9 @@ export COREML_UNET_SAVEPATH=<path_to_save_coreml_unet>
 replacing <path_to_pytorch_unet> with the path to the pytorch unet checkpoint, and <path_to_save_coreml_unet> with where the converted model will be saved
 
 Then execute
-```
+
+
+```python
 python -m python_coreml_stable_diffusion.torch2coreml_custom --convert-unet --model-version "lykon/absolutereality" -o $COREML_UNET_SAVEPATH --unet-path $PYTORCH_UNET_PATH --compute-unit CPU_AND_NE --quantize-nbits 6 --attention-implementation SPLIT_EINSUM
 ```
 
@@ -58,7 +60,7 @@ replacing <path_to_models> with the absolute path to the models folder
 
 
 #### Then generate an image using
-```
+```python
 swift run StableDiffusionSample "a cat" --resource-path $COREML_MODELS_PATH --seed 123456 --disable-safety --compute-units cpuAndNeuralEngine --step-count 4 --output-path images --scheduler lcm --guidance-scale 1.0
 ```
 
