@@ -2,8 +2,9 @@
 
 > This repository was forked from [https://github.com/apple/ml-stable-diffusion](https://github.com/apple/ml-stable-diffusion)
 
-## We present our app, DreamDrawer, capable of on-device text to image generation in less than 3s
+## We present our app, [DreamDrawer](https://testflight.apple.com/join/rL3YXpjO), capable of on-device text to image generation in less than 3s
 
+> ### Download DreamDrawer using TestFlight [here]((https://testflight.apple.com/join/rL3YXpjO))
 <p align="center">
   <img src="assets/showcase.png"/>
 </p>
