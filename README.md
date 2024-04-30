@@ -17,7 +17,7 @@ All users are welcome to try the application via **[our TestFlight link](https:/
 
 
 ## List of Modules Provided
-- [iOS Mobile App Code](https://github.com/davidw0311/DreamDrawer)
+- [iOS Mobile App Code](https://github.com/ngshikang/DreamDrawer)
 - [CoreML Model Weights](https://huggingface.co/davidw0311/sd-coreml)
 - [Compilers for Pytorch to CoreML](https://huggingface.co/davidw0311/sd-coreml)
 - [Inferencing in Swift](https://huggingface.co/davidw0311/sd-coreml)
