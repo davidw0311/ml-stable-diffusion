@@ -1,6 +1,6 @@
-# Mobile Stable Diffusion
+# Mobile Stable Diffusion with DreamDrawer
 
-This is the official repo for the paper "DreamDrawer: Faster On-device Image Generation"
+This is the official repo for the paper "DreamDrawer: Ultra-fast Open-sourced Text-to-Image Generation on Mobile Devices"
 
 **We present a new iOS mobile application, [DreamDrawer](https://testflight.apple.com/join/rL3YXpjO), capable of on-device text to image generation in less than 3s.**
 
